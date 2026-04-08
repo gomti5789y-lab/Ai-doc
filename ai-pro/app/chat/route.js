@@ -7,27 +7,28 @@ export async function POST(req) {
       headers: {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://ai-golu.vercel.app", // 👈 IMPORTANT
+        "X-Title": "AI Golu App", // 👈 IMPORTANT
       },
       body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo", // safer model
-        messages: [{ role: "user", content: message }],
+        model: "mistralai/mistral-7b-instruct",
+        messages: [
+          { role: "user", content: message }
+        ],
       }),
     });
 
-    const text = await res.text(); // 👈 IMPORTANT
+    const data = await res.json();
 
-    if (!text) {
+    // 🔥 Debug return
+    if (!data || !data.choices) {
       return Response.json({
-        reply: "No response from API ❌",
+        reply: "API se response nahi aaya ❌",
       });
     }
 
-    const data = JSON.parse(text);
-
     return Response.json({
-      reply:
-        data.choices?.[0]?.message?.content ||
-        "AI ne kuch reply nahi diya ❌",
+      reply: data.choices[0].message.content,
     });
 
   } catch (error) {
