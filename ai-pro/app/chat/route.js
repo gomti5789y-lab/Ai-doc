@@ -37,3 +37,5 @@ export async function POST(req) {
     });
   }
 }
+const text = await res.text();
+const data = JSON.parse(text);
