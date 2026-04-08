@@ -5,7 +5,7 @@ export default function ChatPage() {
   const [msg, setMsg] = useState("");
   const [reply, setReply] = useState("");
 
-  const send = async () => {
+  async function send() {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -16,16 +16,15 @@ export default function ChatPage() {
 
     const data = await res.json();
     setReply(data.reply);
-  };
+  }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div>
       <h1>AI Chat</h1>
 
       <input
         value={msg}
         onChange={(e) => setMsg(e.target.value)}
-        placeholder="Type here..."
       />
 
       <button onClick={send}>Send</button>
