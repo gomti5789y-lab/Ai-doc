@@ -5,10 +5,10 @@ export async function POST(req) {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Authorization": "Bearer " + process.env.OPENROUTER_API_KEY,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://ai-golu.vercel.app", // 👈 IMPORTANT
-        "X-Title": "AI Golu App", // 👈 IMPORTANT
+        "HTTP-Referer": "https://ai-golu.vercel.app",
+        "X-Title": "AI Golu App",
       },
       body: JSON.stringify({
         model: "mistralai/mistral-7b-instruct",
@@ -18,12 +18,28 @@ export async function POST(req) {
       }),
     });
 
-    const data = await res.json();
+    const text = await res.text();
 
-    // 🔥 Debug return
-    if (!data || !data.choices) {
+    console.log("RAW RESPONSE:", text);
+
+    if (!text) {
       return Response.json({
-        reply: "API se response nahi aaya ❌",
+        reply: "API ne blank response diya ❌",
+      });
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      return Response.json({
+        reply: "JSON parse error ❌",
+      });
+    }
+
+    if (!data.choices) {
+      return Response.json({
+        reply: "API error: " + text,
       });
     }
 
@@ -37,5 +53,3 @@ export async function POST(req) {
     });
   }
 }
-const text = await res.text();
-const data = JSON.parse(text);
